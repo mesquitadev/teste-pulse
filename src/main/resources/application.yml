@@ -3,7 +3,7 @@ logging:
     br:
       com:
         mesquitadev:
-          backoffice: DEBUG
+          estoque: DEBUG
 spring:
   profiles:
     active: production
