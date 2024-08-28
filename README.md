@@ -26,5 +26,4 @@ Usando Docker:
 - Lombok 
 - Mapstruct 
 - Junit 
-- Mockito 
-- Sentry para Trace e Logging
+- Mockito
