@@ -6,23 +6,31 @@ import br.com.mesquitadev.estoque.dto.request.ProdutoUpdate;
 import br.com.mesquitadev.estoque.dto.response.ProdutoResponse;
 import br.com.mesquitadev.estoque.models.Produto;
 import br.com.mesquitadev.estoque.service.ProdutoService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
 import java.util.Optional;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ProdutoControllerTest {
-  private final MockMvc mockMvc;
+  private MockMvc mockMvc;
   @Mock
   private ProdutoService produtoService;
   @Mock
@@ -33,6 +41,42 @@ class ProdutoControllerTest {
   public ProdutoControllerTest() {
     MockitoAnnotations.openMocks(this);
     this.mockMvc = MockMvcBuilders.standaloneSetup(produtoController).build();
+  }
+
+  @BeforeEach
+  public void setup() {
+    mockMvc = MockMvcBuilders.standaloneSetup(produtoController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
+  }
+
+  @Test
+  public void testListarProdutos() throws Exception {
+    Produto produto = new Produto();
+    produto.setId(1L);
+    produto.setNome("Produto 1");
+    produto.setDescricao("Descricao 1");
+    produto.setPreco(100.0);
+    produto.setQuantidade(10);
+
+    ProdutoResponse response = new ProdutoResponse();
+    response.setNome("Produto 1");
+    response.setDescricao("Descricao 1");
+    response.setPreco(100.0);
+    response.setQuantidade(10);
+
+    Page<Produto> produtosPage = new PageImpl<>(Collections.singletonList(produto), PageRequest.of(0, 10), 1);
+    Page<ProdutoResponse> responsePage = new PageImpl<>(Collections.singletonList(response), PageRequest.of(0, 10), 1);
+
+    given(produtoService.listarProdutos(Mockito.any(PageRequest.class))).willReturn(produtosPage);
+    given(produtoConverter.pageEntityToResponse(produtosPage)).willReturn(responsePage);
+
+    mockMvc.perform(get("/api/v1/produtos")
+                    .param("page", "0")
+                    .param("size", "10")
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json("{'content':[{'nome':'Produto 1','descricao':'Descricao 1','preco':100.0,'quantidade':10}],'pageable':{'pageNumber':0,'pageSize':10},'totalElements':1}"));
   }
 
   @Test

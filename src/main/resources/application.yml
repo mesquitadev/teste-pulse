@@ -1,52 +1,28 @@
-sentry:
-  dsn: ${SENTRY_DSN:https://ec7952ac8e1441b7b01325f496295041@o468719.ingest.sentry.io/4504771849617408}
-  environment: production
-  debug: true
-  sentry:
-    traces-sample-rate: 0.3
 logging:
   level:
     br:
       com:
-        montrealtecnologia:
+        mesquitadev:
           backoffice: DEBUG
-jwt:
-  auth:
-    converter:
-      resource-id: sunset-tecnologia
-
-keycloak:
-  realm: ${KEYCLOAK_REALM:sunset-tecnologia}
-  domain: ${KEYCLOAK_DOMAIN:auth.clubsunset.tech}
-
-
-  client: ${KEYCLOAK_CLIENT:ClubSunset}
-  urls:
-
 spring:
   profiles:
     active: production
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URL:https://auth.clubsunset.tech/realms/sunset-tecnologia}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         show-sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
         generate_statistics: true
         connection:
           autocommit: false
     open-in-view: false
     show-sql: true
   datasource:
-    username: ${DATASOURCE_USERNAME:doadmin}
-    password: ${DATASOURCE_PASSWORD:AVNS_uvj4yNFuuialz5-c_ju}
-    url: ${DATASOURCE_URL:jdbc:postgresql://db-cs-do-user-2961515-0.c.db.ondigitalocean.com:25060/cs-api-hml?sslmode=require&?serverTimezone=Ameria/Sao_Paulo}
+    username: sa
+    password: password
+    url: jdbc:h2:mem:testdb
     hikari:
       auto-commit: false
       connection-timeout: 250
@@ -54,6 +30,12 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 10
       pool-name: master
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
 server:
   port: '8443'  
   error:

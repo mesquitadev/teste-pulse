@@ -91,11 +91,15 @@
       <artifactId>lombok-mapstruct-binding</artifactId>
       <version>0.2.0</version>
     </dependency>
-    <!--Trace and Logging-->
     <dependency>
-      <groupId>io.sentry</groupId>
-      <artifactId>sentry-spring-boot-starter</artifactId>
-      <version>6.15.0</version>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
